@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Schema = require('mongoose').Schema;
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -7,7 +8,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  username: {
+  nickname: {
     type: String,
     required: true,
     trim: true
