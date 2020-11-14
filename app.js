@@ -1,23 +1,39 @@
 require('./db');
-const createError = require('http-errors');
+
 const express = require('express');
-const path = require('path');
+const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan'); // 기존 로그 외의 추가적인 로그들을 확인할 수 있는 미들웨어
+const path = require('path');
+const cors = require('cors');
+
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
 const usersRouter = require('./routes/users');
-const cors = require('cors');
+const groupsRouter = require('./routes/groups');
+const roomsRouter = require('./routes/rooms');
+
+const { NODE_ENV } = require('./config');
 
 const app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+// 개발시에는 'dev', 배포시에는 'combined'
+app.use((req, res, next) => {
+  if (NODE_ENV === 'production') {
+    morgan('combined')(req, res, next);
+  } else {
+    morgan('dev')(req, res, next);
+  }
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
   origin: true,
-  credentials : true
+  credentials: true
 }));
 
 //app.use(express.static(path.join(__dirname, 'public')));
@@ -25,6 +41,8 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);
+app.use('/groups', groupsRouter);
+app.use('/rooms', roomsRouter);
 
 app.use(function (req, res, next) {
   next(createError(404));
