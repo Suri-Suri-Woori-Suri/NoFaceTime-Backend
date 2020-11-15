@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const roomSchema = new mongoose.Schema({
+const roomSchema = new Schema({
   name: {
     type: String,
     unique: true,
@@ -9,6 +10,7 @@ const roomSchema = new mongoose.Schema({
   },
   host: {
     type: Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
     trim: true
   },

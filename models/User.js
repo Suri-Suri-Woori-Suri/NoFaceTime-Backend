@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const Schema = require('mongoose').Schema;
+const { Schema } = mongoose;
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   email: {
     type: String,
     unique: true,
@@ -13,8 +13,14 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  groups: [Schema.Types.ObjectId],
-  rooms: [Schema.Types.ObjectId]
+  groups: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Group'
+  }],
+  rooms: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Room'
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
