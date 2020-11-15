@@ -8,8 +8,9 @@ const groupSchema = new Schema({
     trim: true
   },
   members: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User'
+    type: String,
+    require: true,
+    trim: true
   }]
 }, { timestamps: true });
 

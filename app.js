@@ -7,7 +7,6 @@ const morgan = require('morgan'); // 기존 로그 외의 추가적인 로그들
 const path = require('path');
 const cors = require('cors');
 
-const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
 const usersRouter = require('./routes/users');
 const groupsRouter = require('./routes/groups');
@@ -38,7 +37,6 @@ app.use(cors({
 
 //app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);
 app.use('/groups', groupsRouter);

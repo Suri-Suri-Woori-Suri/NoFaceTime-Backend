@@ -1,25 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-const { RESPONSE_MESSAGE } = require('../constants');
 const {
   getAllGroups,
   createNewGroup,
   deleteGroup
 } = require('./controller/group.controller');
+const verifyToken = require('./middleware/verifyToken');
 
-router.get('/', getAllGroups);
+router.get('/', verifyToken, getAllGroups);
 
-router.post('/', createNewGroup);
+router.post('/', verifyToken, createNewGroup);
 
-router.delete('/', (req, res, next) => { // 그룹 삭제할 때 delete 요청 들어올 때
-  try {
-    res.stats(204).send({
-      message: RESPONSE_MESSAGE.NO_CONTENT
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+router.delete('/', verifyToken, deleteGroup);
 
 module.exports = router;
