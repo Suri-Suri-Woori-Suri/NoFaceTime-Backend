@@ -1,14 +1,35 @@
-const { SECRET_KEY } = require('../../config/index');
 const jwt = require('jsonwebtoken');
 
-module.exports = function verifyToken(req, res, next) {
-  const { cookie } = req.headers;
-  const token = cookie.split('=')[1];
-  if (token === null) return res.sendStatus(401);//아예 쿠키가 없음
+const { JWT_SECRET_KEY } = require('../../config/index');
+const { TOKEN_MESSAGE } = require('../../constants');
 
-  jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return res.sendStatus(403);//만료
-    req.user = user;
-    next();
-  });
-}
+const verifyToken = (req, res, next) => {
+  try {
+    const { cookie } = req.headers;
+    const token = cookie.split('=')[1];
+    console.log("VERYFY TOKEN", token);
+
+    if (!token) {
+      return res.status(401).send({
+        code: 401,
+        message: TOKEN_MESSAGE.NOT_EXIST,
+      });
+    }
+
+    jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
+      if (err) {
+        return res.status(401).send({
+          code: 401,
+          message: TOKEN_MESSAGE.INVALID
+        });
+      }
+
+      req.user = user;
+      next();
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+module.exports = verifyToken;

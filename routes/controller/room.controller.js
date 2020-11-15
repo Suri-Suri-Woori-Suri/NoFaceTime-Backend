@@ -1,34 +1,34 @@
 const { v4: uuidv4 } = require('uuid');
 
-const { RESPONSE_MESSAGE } = require('../../constants');
 const { SERVICE_URL } = require('../../config');
+const { RESPONSE_MESSAGE } = require('../../constants');
 
-const {
-  addUserRoomsData,
-  addUserGroupsData,
-  deleteUserRoomsData
-} = require('../../services/User');
+const User = require('../../models/User');
+const Room = require('../../models/Room');
+const Group = require('../../models/Group');
 
-const {
-  findAllRoomsData,
-  createNewRoomData,
-  removeRoomData
-} = require('../../services/Room');
+const UserService = require('../../services/User');
+const RoomService = require('../../services/Room');
+const GroupService = require('../../services/Group');
+
+const userService = new UserService(User);
+const roomService = new RoomService(User, Room);
+const groupService = new GroupService(User, Group);
 
 exports.getAllRooms = async (req, res, next) => {
   try {
-    const userId = req.body; // req.body 중 userObjectId 받아오는 부분
-    const allRoomsData = await findAllRoomsData(userId);
+    const { currentUser } = req.body;
+    const userData = await userService.getUserData({ '_id': currentUser._id });
 
-    return res.send(allRoomsData);
+    return res.send(userData.rooms);
   } catch (err) {
     console.error(err);
   }
 };
 
-exports.postNewRoom = async (req, res, next) => {
+exports.createNewRoom = async (req, res, next) => {
   try {
-    console.log('postNewRoom', req.body);
+    console.log('createNewRoom', req.body);
     const { currentUser, roomName } = req.body;
     const roomUniqueId = uuidv4();
 
@@ -38,11 +38,13 @@ exports.postNewRoom = async (req, res, next) => {
       link: `${SERVICE_URL}/${roomUniqueId}`
     };
 
-    const roomDataSavedToDB = await createNewRoomData(newRoomData);
-    const newUserData = await addUserRoomsData(currentUser._id, roomDataSavedToDB._id);
-    console.log("NEW USER DATA", newUserData);
+    //const roomDataSavedToDB = await createNewRoomData(newRoomData);
+    await roomService.createRoom(newRoomData);
+    // const newUserData = await addUserRoomsData(currentUser._id, roomDataSavedToDB._id);
+    // console.log("NEW USER DATA", newUserData);
 
-    return res.send(newUserData);
+    // return res.send(newUserData);
+    next();
   } catch (err) {
     console.error(err);
   }
@@ -50,12 +52,7 @@ exports.postNewRoom = async (req, res, next) => {
 
 exports.deleteRoom = async (req, res, next) => {
   try {
-    const { currentUser, roomId } = req.body;
-    console.log("delete?", currentUser, roomId);
 
-    await removeRoomData(roomId);
-    await deleteUserRoomsData(currentUser, roomId);
-    console.log("delete!!!!");
   } catch (err) {
     console.error(err);
   }

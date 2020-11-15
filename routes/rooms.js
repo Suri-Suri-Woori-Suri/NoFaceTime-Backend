@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
+const verifyToken = require('./middleware/verifyToken');
+
 const {
   getAllRooms,
-  postNewRoom,
+  createNewRoom,
   deleteRoom
 } = require('./controller/room.controller');
 
-router.get('/', getAllRooms);
+router.get('/', verifyToken, getAllRooms);
 
-router.post('/', postNewRoom);
+router.post('/', verifyToken, createNewRoom);
 
-router.delete('/', deleteRoom);
+router.delete('/', verifyToken, deleteRoom);
 
 module.exports = router;
