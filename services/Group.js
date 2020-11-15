@@ -1,23 +1,45 @@
 const Group = require('../models/Group');
 const User = require('../models/User');
 
-exports.findAllGroups = async (userObjectId) => {
-  const UserData = await User.findById(userObdjectId).exec();
-  const { groups } = UserData;
+// exports.findAllGroupsData = async (userObjectId) => {
+//   const UserData = await User.findById(userObdjectId).exec();
+//   const { groups } = UserData;
 
-  return groups;
-};
+//   return groups;
+// };
 
-exports.addNewGroup = async (userObjdectId, newGroupData) => {
-  /* user의 groups 배열에도 추가하고 group에서도 추가하고 */
-  // newGroupData = {name : "groupName", members : [ member 정보들!]} 
+// exports.createNewGroupData = async (newGroupData) => {
+//   // newGroupData = {name : "groupName", members : [ member 정보들!]} 
+//   return await Group.create(newGroupData);
+// };
 
-  await Group.create(newGroupData);
-  await User.updateOne('groups', newGroupData);
+// exports.removeGorupData = async (req, res, next) => {
+//   /* req에 들어와야 할 정보 : 로그인 되어 있는 user가 누구인지, 어떤 group을 지우려고 하는지 */
+//   await Group;
+// };
 
-};
+module.exports = class GroupService {
+  constructor(userModel, groupModel) {
+    this.userModel = userModel;
+    this.groupModel = groupModel;
+  }
 
-exports.removeGorup = async (req, res, next) => {
-  /* req에 들어와야 할 정보 : 로그인 되어 있는 user가 누구인지, 어떤 group을 지우려고 하는지 */
-  await Group;
+  async findAll(userObjectId) {
+    try {
+      const UserData = await this.userModel.findById(userObjectId).exec();
+      const { groups } = UserData;
+
+      return groups;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async create(newGroupData) {
+    try {
+      return await this.groupModel.create(newGroupData);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 };
