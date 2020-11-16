@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 const groupSchema = new Schema({
   name: {
     type: String,
-    required: true,
     trim: true
   },
   members: [{

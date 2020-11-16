@@ -40,13 +40,12 @@ exports.createNewRoom = async (req, res, next) => {
     };
 
     const roomDataSavedToDB = await roomService.createRoom(newRoomData);
-    console.log("NEW NEW NEW", roomDataSavedToDB);
 
     await userService.addUserRoomData(currentUser._id, roomDataSavedToDB._id);
     const newUserData = await userService.getUserData({ '_id': currentUser._id });
     console.log("NEW USER DATA", newUserData);
 
-    return res.json({ rooms: newUserData[0].rooms });
+    return res.status(201).json({ rooms: newUserData[0].rooms });
   } catch (err) {
     console.error(err);
   }
@@ -60,7 +59,7 @@ exports.deleteRoom = async (req, res, next) => {
     console.log("room controller DELETE RESULT", result);
 
     const newUserData = await userService.getUserData({ '_id': userId });
-    console.log("delete 후에 rooms", newUserData.rooms);
+    console.log('######', newUserData); 
 
     return res.json({ rooms: newUserData[0].rooms });
   } catch (err) {
