@@ -13,6 +13,6 @@ router.get('/:userId', verifyToken, getAllRooms);
 
 router.post('/', verifyToken, createNewRoom);
 
-router.delete('/', verifyToken, deleteRoom);
+router.delete('/:roomId', verifyToken, deleteRoom);
 
 module.exports = router;
