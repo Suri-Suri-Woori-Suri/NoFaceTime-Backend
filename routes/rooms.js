@@ -9,7 +9,7 @@ const {
   deleteRoom
 } = require('./controller/room.controller');
 
-router.get('/', verifyToken, getAllRooms);
+router.get('/:userId', verifyToken, getAllRooms);
 
 router.post('/', verifyToken, createNewRoom);
 

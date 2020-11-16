@@ -7,7 +7,12 @@ module.exports = class UserService {
 
   async getUserData(filterOfUser) {
     try {
-      return await this.userModel.find(filterOfUser);
+      console.log("USER SERVICE", filterOfUser);
+
+      const result = await this.userModel.find(filterOfUser);
+      console.log("가져온 정보?", result);
+
+      return result;
     } catch (err) {
       console.error(err);
     }
@@ -16,8 +21,10 @@ module.exports = class UserService {
   async addUserData(newUserData) {
     try {
       const { email, nickname } = newUserData;
+      console.log("USER SERVICER, ADD USER DATA, input", newUserData);
 
-      return await new User({ email, nickname, groups: [], rooms: [] }).save();
+      const result = await new User({ email, nickname, groups: [], rooms: [] }).save();
+      console.log("result", result);
     } catch (err) {
       console.error(err);
     }
