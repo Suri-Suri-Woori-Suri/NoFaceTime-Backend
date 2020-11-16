@@ -24,6 +24,8 @@ exports.loginAndIssueToken = async (req, res, next) => {
       loginUserData = await userService.addUserData(payload);
     }
 
+    console.log("#####", loginUserData);
+
     const token = jwt.sign(
       payload,
       JWT_SECRET_KEY,
