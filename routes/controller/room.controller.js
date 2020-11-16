@@ -17,10 +17,11 @@ const groupService = new GroupService(User, Group);
 
 exports.getAllRooms = async (req, res, next) => {
   try {
-    const { currentUser } = req.body;
-    const userData = await userService.getUserData({ '_id': currentUser._id });
+    const userId = req.params.userId;
+    const userData = await userService.getUserData({ '_id': userId });
+    console.log("GET ALL ROOMS", userData);
 
-    return res.send(userData.rooms);
+    return res.json({ rooms: userData.rooms });
   } catch (err) {
     console.error(err);
   }
@@ -38,13 +39,14 @@ exports.createNewRoom = async (req, res, next) => {
       link: `${SERVICE_URL}/${roomUniqueId}`
     };
 
-    //const roomDataSavedToDB = await createNewRoomData(newRoomData);
-    await roomService.createRoom(newRoomData);
-    // const newUserData = await addUserRoomsData(currentUser._id, roomDataSavedToDB._id);
-    // console.log("NEW USER DATA", newUserData);
+    const roomDataSavedToDB = await roomService.createRoom(newRoomData);
+    console.log("NEW NEW NEW", roomDataSavedToDB);
 
-    // return res.send(newUserData);
-    next();
+    await userService.addUserRoomData(currentUser._id, roomDataSavedToDB._id);
+    const newUserData = await userService.getUserData({ '_id': currentUser._id });
+    console.log("NEW USER DATA", newUserData);
+
+    return res.json({ rooms: newUserData[0].rooms });
   } catch (err) {
     console.error(err);
   }
