@@ -26,7 +26,10 @@ module.exports = class RoomService {
 
   async deleteRoom(roomObjectId) {
     try {
-      return await this.roomModel.deleteOne({ 'id': roomObjectId });
+      const result = await this.roomModel.deleteOne({ '_id': roomObjectId });
+      console.log("DELETE RESULT");
+
+      return result;
     } catch (err) {
       console.error(err);
     }

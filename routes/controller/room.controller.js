@@ -54,7 +54,15 @@ exports.createNewRoom = async (req, res, next) => {
 
 exports.deleteRoom = async (req, res, next) => {
   try {
+    const roomId = req.params.roomId;
+    const { userId } = req.body;
+    const result = await roomService.deleteRoom(roomId);
+    console.log("room controller DELETE RESULT", result);
 
+    const newUserData = await userService.getUserData({ '_id': userId });
+    console.log("delete 후에 rooms", newUserData.rooms);
+
+    return res.json({ rooms: newUserData[0].rooms });
   } catch (err) {
     console.error(err);
   }
