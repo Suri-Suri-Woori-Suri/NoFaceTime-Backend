@@ -22,17 +22,19 @@ exports.getAllGroups = async (req, res, next) => {
 };
 
 exports.createNewGroup = async (req, res, next) => {
+  console.log('*******')
   try {
-    const { currentUser, groupName, members } = req.body;
+    const { userId, groupName, members } = req.body;
     const newGroupData = {
       name: groupName,
       members: members
     };
 
-    await groupService.createGroup(newGroupData);
-    const userData = await userService.getUserData({ '_id': currentUser._id });
+    const groupDataSavedToDB = await groupService.createGroup(newGroupData);
+    await userService.addUserGroupData(userId, groupDataSavedToDB._id);
+    const updatedUser = await userService.getUserData({ '_id': userId });
 
-    return res.status(201).send(userData.groups);
+    return res.status(201).json({ groups: updatedUser[0].groups });
   } catch (err) {
     console.error(err);
     next(err);
