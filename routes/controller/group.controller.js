@@ -1,4 +1,5 @@
 const { RESPONSE_MESSAGE } = require('../../constants');
+const queryString = require('query-string');
 
 const User = require('../../models/User');
 const Group = require('../../models/Group');
@@ -41,15 +42,15 @@ exports.createNewGroup = async (req, res, next) => {
   }
 };
 
-exports.deleteGroups = (req, res, next) => {
+exports.deleteGroups = async (req, res, next) => {
   try {
-    const { userId, selectedGroup } = req.body;
-    await groupService.deleteGroups(selectedGroup);
+    const { userId } = req.body;
+    const parsed = queryString.parse(req.params.id);
+    await groupService.deleteGroups(parsed.group);
     const updatedUser = await userService.getUserData({ '_id': userId });
-
-    return res.status(204).json({ groups: updatedUser[0].groups });
+    //204...?
+    return res.status(200).json({ groups: updatedUser[0].groups });
   } catch (err) {
     console.error(err);
   }
-
 };
