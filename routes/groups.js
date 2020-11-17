@@ -12,6 +12,6 @@ router.get('/', verifyToken, getAllGroups);
 
 router.post('/', verifyToken, createNewGroup);
 
-router.delete('/', verifyToken, deleteGroup);
+router.delete('/', verifyToken, deleteGroups);
 
 module.exports = router;

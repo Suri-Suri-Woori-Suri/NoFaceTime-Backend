@@ -22,7 +22,7 @@ exports.getAllGroups = async (req, res, next) => {
 };
 
 exports.createNewGroup = async (req, res, next) => {
-  console.log('*******')
+  console.log('*******');
   try {
     const { userId, groupName, members } = req.body;
     const newGroupData = {
@@ -41,9 +41,13 @@ exports.createNewGroup = async (req, res, next) => {
   }
 };
 
-exports.deleteGroup = (req, res, next) => {
+exports.deleteGroups = (req, res, next) => {
   try {
+    const { userId, selectedGroup } = req.body;
+    await groupService.deleteGroups(selectedGroup);
+    const updatedUser = await userService.getUserData({ '_id': userId });
 
+    return res.status(204).json({ groups: updatedUser[0].groups });
   } catch (err) {
     console.error(err);
   }
