@@ -23,9 +23,13 @@ module.exports = class GroupService {
     }
   }
 
-  async deleteGroup(groupObjectId) {
+  async deleteGroups(arrayOfGroupObjectId) {
     try {
-      return await this.gorupModel.deleteOne({ 'id': groupObjectId });
+      arrayOfGroupObjectId.forEach((id) => {
+        console.log("delete group id", id);
+        await this.groupModel.deleteOne({ '_id': id });
+      });
+      return;
     } catch (err) {
       console.error(err);
     }
