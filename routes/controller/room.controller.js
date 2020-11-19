@@ -10,22 +10,11 @@ const Group = require('../../models/Group');
 const UserService = require('../../services/User');
 const RoomService = require('../../services/Room');
 const GroupService = require('../../services/Group');
+const { restart } = require('nodemon');
 
 const userService = new UserService(User);
 const roomService = new RoomService(User, Room);
 const groupService = new GroupService(User, Group);
-
-exports.getAllRooms = async (req, res, next) => {
-  try {
-    const userId = req.params.userId;
-    const userData = await userService.getUserData({ '_id': userId });
-    console.log("GET ALL ROOMS", userData);
-
-    return res.json({ rooms: userData.rooms });
-  } catch (err) {
-    console.error(err);
-  }
-};
 
 exports.createNewRoom = async (req, res, next) => {
   try {
@@ -36,16 +25,13 @@ exports.createNewRoom = async (req, res, next) => {
     const newRoomData = {
       name: roomName,
       host: currentUser._id,
-      link: `${SERVICE_URL}/${roomUniqueId}`
+      link: `${SERVICE_URL}/rooms/${roomUniqueId}`
     };
 
     const roomDataSavedToDB = await roomService.createRoom(newRoomData);
-
+    console.log("$$$$$$", roomDataSavedToDB)
     await userService.addUserRoomData(currentUser._id, roomDataSavedToDB._id);
-    const newUserData = await userService.getUserData({ '_id': currentUser._id });
-    console.log("NEW USER DATA", newUserData);
-
-    return res.status(201).json({ rooms: newUserData[0].rooms });
+    return res.status(201).json({ rooms: roomDataSavedToDB });//전체 방 정보가 아닌 ADDED ROOM 하나의 정보만 보냅니다.
   } catch (err) {
     console.error(err);
   }
@@ -55,13 +41,10 @@ exports.deleteRoom = async (req, res, next) => {
   try {
     const roomId = req.params.roomId;
     const { userId } = req.body;
-    const result = await roomService.deleteRoom(roomId);
-    console.log("room controller DELETE RESULT", result);
+    await roomService.deleteRoom(roomId);
+    await userService.deleteUserRoomData(userId, roomId);
 
-    const newUserData = await userService.getUserData({ '_id': userId });
-    console.log('######', newUserData); 
-
-    return res.json({ rooms: newUserData[0].rooms });
+    return res.status(204);
   } catch (err) {
     console.error(err);
   }

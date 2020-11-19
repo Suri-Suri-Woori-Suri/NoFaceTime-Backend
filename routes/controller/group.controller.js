@@ -10,6 +10,39 @@ const GroupService = require('../../services/Group');
 const userService = new UserService(User);
 const groupService = new GroupService(User, Group);
 
+exports.createNewGroup = async (req, res, next) => {
+  try {
+    const { userId, groupName, members } = req.body;
+    const newGroupData = {
+      name: groupName,
+      members: members
+    };
+
+    console.log(userId);
+    const groupDataSavedToDB = await groupService.createGroup(newGroupData);
+    console.log("#######", groupDataSavedToDB);
+    await userService.addUserGroupData(userId, groupDataSavedToDB._id);
+    return res.status(201).json({ groups: groupDataSavedToDB });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+exports.deleteGroups = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    const parsed = queryString.parse(req.params.id);
+    const groupIdArray = Array.isArray(parsed.group) ? parsed.group : [parsed.group];
+    await groupService.deleteMultipleGroups(groupIdArray);
+    await userService.deleteUserGroupData(userId, groupIdArray);
+
+    return res.status(204);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 exports.getAllMembers = async (req, res, next) => {
   try {
     const groupId = req.params.id;
@@ -21,51 +54,16 @@ exports.getAllMembers = async (req, res, next) => {
   }
 };
 
-exports.createNewGroup = async (req, res, next) => {
-  try {
-    const { userId, groupName, members } = req.body;
-    const newGroupData = {
-      name: groupName,
-      members: members
-    };
-
-    const groupDataSavedToDB = await groupService.createGroup(newGroupData);
-    await userService.addUserGroupData(userId, groupDataSavedToDB._id);
-    const updatedUser = await userService.getUserData({ '_id': userId });
-
-    return res.status(201).json({ groups: updatedUser[0].groups });
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-};
-
-exports.deleteGroups = async (req, res, next) => {
-  try {
-    const { userId } = req.body;
-    const parsed = queryString.parse(req.params.id);
-    console.log('$$$$$$$$', req.params.id);
-    console.log('$$$$$$$$', parsed);
-    const groupIdArray = Array.isArray(parsed.groups) ? parsed.group : [parsed.group] ;
-
-    await groupService.deleteGroups( groupIdArray);
-    const updatedUser = await userService.getUserData({ '_id': userId });
-    //204...?
-    return res.status(200).json({ groups: updatedUser[0].groups });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 exports.addMembersToGroup = async (req, res, next) => {
   try {
     const groupId = req.params.groupId;
     const { members } = req.body;
-    await groupService.addMembers(groupId, members);
-    const updatedMembers = await groupService.findMembers(groupId);
-    return res.status(201).json({ updatedMembers });
+    console.log('***************', members);
+    await groupService.addMembers(groupId, members);//업데이트 된 그룹 데이터
+
+    return res.json({ groupId, members });
   } catch (err) {
-    console.errer(err);
+    console.log(err);
   }
 };
 
@@ -73,9 +71,10 @@ exports.deleMembersFromGroup = async (req, res, next) => {
   try {
     const groupId = req.params.groupId;
     const parsed = queryString.parse(req.params.memberId);
-    await groupService.deleteMembers(groupId, parsed.member);
+    const membersArray = Array.isArray(parsed.member) ? parsed.member : [parsed.member];
+    await groupService.deleteMembers(groupId, membersArray);
     const updatedMembers = await groupService.findMembers(groupId);
-    return res.status(201).json({ updatedMembers });
+    return res.status(204);
   } catch (err) {
     console.log(err);
   }
