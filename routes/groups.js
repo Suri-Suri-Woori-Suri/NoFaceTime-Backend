@@ -2,15 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 const {
-  getAllMembers,
   createNewGroup,
   deleteGroups,
+  getAllMembers,
   addMembersToGroup,
   deleMembersFromGroup
 } = require('./controller/group.controller');
+
 const verifyToken = require('./middleware/verifyToken');
 
-router.post('/', verifyToken, createNewGroup);
+router.post('/', verifyToken, createNewGroup);//add group
 
 router.delete('/:id', verifyToken, deleteGroups);
 

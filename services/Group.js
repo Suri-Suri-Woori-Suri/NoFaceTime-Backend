@@ -4,7 +4,26 @@ module.exports = class GroupService {
     this.groupModel = groupModel;
   }
 
-  async findMembers(groupId) {
+  async createGroup(newGroupData) {
+    try {
+      return await this.groupModel.create(newGroupData);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async deleteMultipleGroups(arrayOfGroupObjectId) {
+    try {
+      arrayOfGroupObjectId.forEach(async(id) => {
+        await this.groupModel.deleteOne({ '_id': id });
+      });
+      return;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async findMembers(groupId) {//ok
     try {
       const groupData = await this.groupModel.findById(groupId).exec();
       console.log("########", groupData);
@@ -16,9 +35,10 @@ module.exports = class GroupService {
     }
   }
 
-  async addMembers(groupId, membersArray) {
+  async addMembers(groupId, membersArray) {//ok
     try {
-      const groupData = await this.groupModel.update({ _id: groupId }, { $push: { members: { $each: membersArray } } }).exec();
+      const groupData = await this.groupModel.updateMany({ _id: groupId }, { $push: { members: { $each: membersArray } } }).exec();
+      console.log("########", groupData);
       return groupData;
     } catch (err) {
       console.error(err);
@@ -29,25 +49,6 @@ module.exports = class GroupService {
     try {
       const groupData = await this.groupModel.updateMany({ _id: groupId }, { $pull: { members: { $in: membersArray } } }).exec();
       return groupData;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async createGroup(newGroupData) {
-    try {
-      return await this.groupModel.create(newGroupData);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async deleteGroups(arrayOfGroupObjectId) {
-    try {
-      arrayOfGroupObjectId.forEach(async(id) => {
-        await this.groupModel.deleteOne({ '_id': id });
-      });
-      return;
     } catch (err) {
       console.error(err);
     }

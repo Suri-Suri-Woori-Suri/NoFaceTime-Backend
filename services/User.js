@@ -9,7 +9,7 @@ module.exports = class UserService {
     try {
       console.log("USER SERVICE", filterOfUser);
 
-      const result = await this.userModel.find(filterOfUser).populate('rooms').populate('groups');
+      const result = await this.userModel.findOne(filterOfUser).populate('rooms').populate('groups');
       console.log("가져온 정보?", result);
 
       return result;
@@ -40,11 +40,11 @@ module.exports = class UserService {
     }
   }
 
-  async deleteUserGroupData(userObjectId, groupObjectId) {
+  async deleteUserGroupData(userObjectId, groupObjectIds) {
     try {
-      return await this.groupModel.updateOne(
+      return await this.userModel.updateMany(
         { '_id': userObjectId },
-        { $pull: { 'groups': groupObjectId } });
+        { $pull: { 'groups': { $in: groupObjectIds } } });
     } catch (err) {
       console.error(err);
     }
