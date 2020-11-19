@@ -1,12 +1,53 @@
 const app = require('../app');
 const debug = require('debug')('backend:server');
-const http = require('http');
 const port = normalizePort(process.env.PORT || 5000);
+const socketio = require('socket.io');
+
 app.set('port', port);
+const https = require('https');
+const fs = require('fs');
+const options = {
+  key: fs.readFileSync('./bin/key.pem'),
+  cert: fs.readFileSync('./bin/cert.pem'),
+  passphrase: 'test',
+  requestCert: false,
+  rejectUnauthorized: false,
+};
 
-const server = http.createServer(app);
+const server = https.createServer(options, app).listen(port, function () {
+  console.log('Https server listening');
+});
 
-server.listen(port);
+const io = socketio(server, {
+  cors: {
+    origin: "https://localhost:3000",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
+  }
+});
+
+io.on('connection', socket => {
+  console.log('we have a new connection!!');
+
+  socket.on('join-room', (name, roomLinkId) => {
+    console.log(name, roomLinkId);
+    //socket.to(roomId).broadcast.emit('user-connected', userId);
+  });
+
+  // socket.on('join', ({ name, room }, callback) => {
+  //   console.log(name);
+  //   console.log(room);
+
+  //   callback();//error handling
+  // });
+
+  socket.on('disconnect', () => {//specific socket that joined
+    console.log('user left');
+  });
+});
+
+//server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 

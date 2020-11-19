@@ -3,7 +3,7 @@ require('./db');
 const express = require('express');
 const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
-const morgan = require('morgan'); // 기존 로그 외의 추가적인 로그들을 확인할 수 있는 미들웨어
+const morgan = require('morgan');
 const path = require('path');
 const cors = require('cors');
 
