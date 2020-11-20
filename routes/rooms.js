@@ -2,11 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 const verifyToken = require('./middleware/verifyToken');
+const sendMail = require('../utils/nodeMailer');
 
 const {
   createNewRoom,
-  deleteRoom
+  deleteRoom,
+  getRoom
 } = require('./controller/room.controller');
+
+router.get('/:roomId', getRoom);
 
 router.post('/', verifyToken, createNewRoom);
 
