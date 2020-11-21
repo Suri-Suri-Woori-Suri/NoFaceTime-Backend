@@ -16,12 +16,11 @@ exports.loginAndIssueToken = async (req, res, next) => {
   try {
     const payload = req.body;
     const { email, nickname } = req.body;
-    let loginUserData = await userService.getUserData({ 'email': email });//객체
+    let loginUserData = await userService.getUserData({ 'email': email }); // 객체
 
     if (!loginUserData) {
       loginUserData = await userService.addUserData(payload);
     }
-    console.log("%%%%%%%%", loginUserData)
 
     const token = jwt.sign(
       payload,

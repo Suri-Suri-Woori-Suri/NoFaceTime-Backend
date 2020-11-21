@@ -6,10 +6,21 @@ module.exports = class RoomService {
 
   async findAll(userObjectId) {
     try {
-      const UserData = await this.userModel.findById(userObjectId).exec();
-      const { rooms } = UserData;
+      const userData = await this.userModel.findById(userObjectId).exec();
+      const { rooms } = userData;
 
       return rooms;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async getRoom(roomLink) {
+    try {
+      const roomData = await this.roomModel.find({ link: roomLink }).exec();
+      console.log("ROOM SERVICE", roomData);
+
+      return roomData;
     } catch (err) {
       console.error(err);
     }

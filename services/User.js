@@ -10,7 +10,6 @@ module.exports = class UserService {
       console.log("USER SERVICE", filterOfUser);
 
       const result = await this.userModel.findOne(filterOfUser).populate('rooms').populate('groups');
-      console.log("가져온 정보?", result);
 
       return result;
     } catch (err) {
@@ -21,7 +20,6 @@ module.exports = class UserService {
   async addUserData(newUserData) {
     try {
       const { email, nickname } = newUserData;
-      console.log("USER SERVICER, ADD USER DATA, input", newUserData);
 
       const result = await new User({ email, nickname, groups: [], rooms: [] }).save();
       return result;

@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 
-const { SERVICE_URL } = require('../../config');
 const { RESPONSE_MESSAGE } = require('../../constants');
+const { SERVICE_URL, SERVER_URL } = require('../../config');
 
 const User = require('../../models/User');
 const Room = require('../../models/Room');
@@ -10,15 +10,30 @@ const Group = require('../../models/Group');
 const UserService = require('../../services/User');
 const RoomService = require('../../services/Room');
 const GroupService = require('../../services/Group');
-const { restart } = require('nodemon');
 
 const userService = new UserService(User);
 const roomService = new RoomService(User, Room);
 const groupService = new GroupService(User, Group);
 
+const sendMail = require('../../utils/nodeMailer');
+
+exports.getRoom = async (req, res, next) => {
+  try {
+    const roomLink = `${SERVICE_URL}/rooms/${req.params.roomId}`;
+    console.log("CONTROLLER' LINK", roomLink);
+    const roomData = await roomService.getRoom(roomLink);
+
+    console.log("ROOM CONTROLLER", roomData);
+    return res.status(200).send(roomData);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 exports.createNewRoom = async (req, res, next) => {
   try {
     console.log('createNewRoom', req.body);
+    sendMail();
     const { currentUser, roomName } = req.body;
     const roomUniqueId = uuidv4();
 
@@ -29,7 +44,7 @@ exports.createNewRoom = async (req, res, next) => {
     };
 
     const roomDataSavedToDB = await roomService.createRoom(newRoomData);
-    console.log("$$$$$$", roomDataSavedToDB)
+    console.log("$$$$$$", roomDataSavedToDB);
     await userService.addUserRoomData(currentUser._id, roomDataSavedToDB._id);
     return res.status(201).json({ rooms: roomDataSavedToDB });//전체 방 정보가 아닌 ADDED ROOM 하나의 정보만 보냅니다.
   } catch (err) {
@@ -49,3 +64,4 @@ exports.deleteRoom = async (req, res, next) => {
     console.error(err);
   }
 };
+
