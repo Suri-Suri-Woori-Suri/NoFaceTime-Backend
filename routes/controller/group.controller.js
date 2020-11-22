@@ -1,4 +1,4 @@
-const { RESPONSE_MESSAGE } = require('../../constants');
+const { RESPONSE_MESSAGE } = require('../../utils/constants');
 const queryString = require('query-string');
 
 const User = require('../../models/User');

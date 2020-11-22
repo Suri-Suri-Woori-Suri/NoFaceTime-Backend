@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET_KEY } = require('../../config/index');
-const { TOKEN_MESSAGE } = require('../../constants');
+const { TOKEN_MESSAGE } = require('../../utils/constants');
 
 const verifyToken = (req, res, next) => {
   try {
