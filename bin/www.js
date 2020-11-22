@@ -27,27 +27,71 @@ const io = socketio(server, {
   }
 });
 
+// const socketFunc = require('../utils/socket');
+// const { disconnect } = require('process');
+// socketFunc.startSocket(io);
+const members = {};  // socketId : { userId, roomId, nickname, socketId }
+const rooms = {}; //id : { host, memberList }
+
 io.on('connection', socket => {
   console.log('we have a new connection!!');
+  //나중에 host 정보도 가져와야한다.- > secret chat 구현위해서
+  socket.on('join-room', ({ roomId, userId, nickname }) => {//userId === socket.id
+    socket.join(roomId);
 
-  socket.on('join-room', (name, roomLinkId) => {
-    console.log(name, roomLinkId);
-    //socket.to(roomId).broadcast.emit('user-connected', userId);
+    if (!rooms.hasOwnProperty(roomId)) rooms[roomId] = { memberList: [] };//host: socket.id
+    //if (host === true) //예시
+    //rooms[roomId] = socket.id//(host's socket Id)
+    //socket.to(roomId).emit('joined', { members });
+    const newobj= {};
+    const newMember = { roomId, userId, nickname, socketId: socket.id };
+    newobj[socket.id] = newMember;
+    console.log("$$$", newobj);
+
+    io.to(socket.id).emit('joined', { members });//기존의 맴버, 방금 join 한 사람한테만간다
+    socket.to(roomId).emit('joined', { newMember: newobj });//새 맴버, 방금 join 한 사람 외의 모두에게 간다.
+
+    members[socket.id] = newMember;
+    rooms[roomId].memberList.push(newMember);
+    console.log(rooms);
+    console.log(members)
+
+    //io.in(roomId).emit('joined', { newMember, members }) //sender 포함
+    //socket.broadcast.to(roomId).emit('joined', { newMember, members });
   });
 
-  // socket.on('join', ({ name, room }, callback) => {
-  //   console.log(name);
-  //   console.log(room);
+  socket.on('send signal', ({ signal, to }) => {
+    const from = members[socket.id];
+    console.log("INITIATOR", socket.id, " SAME WITH ", from);
+    console.log("RECIEVER", to);
+    const { socketId } = to;
+    console.log("RECIEVERS SOCKET ID", socketId);
+    io.to(socketId).emit('return signal', { signal, from });
+    console.log('send back signal to client from server');
+  });
 
-  //   callback();//error handling
-  // });
+  ///////////////////////////////returning back
 
-  socket.on('disconnect', () => {//specific socket that joined
-    console.log('user left');
+  socket.on('respond signal', ({ signal, to }) => {
+    console.log('respond signal(SERVER)', to);
+    const from = members[socket.id];
+    console.log("RECIVER", from);//'xfMyb6PCqSQ8PKN8AAAD', 08xBsNi1UOtMl26hAAAF'
+    console.log("INITIATOR", to);//'08xBsNi1UOtMl26hAAAF'
+    const { socketId } = to;
+
+    io.to(socketId).emit('respond signal', { signal, from });
+  });
+  socket.on('leave', (data) => {
+    console.log('someone leave..');//버튼 눌러서
+    //socket.to(socket.id).emit('user left', socket.id);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('someone leave..');//창 닫아버림
+    socket.to(socket.id).emit('user left', { sockeId: socket.id });
   });
 });
 
-//server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 

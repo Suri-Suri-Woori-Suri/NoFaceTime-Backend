@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 
-const { RESPONSE_MESSAGE } = require('../../constants');
-const { SERVICE_URL, SERVER_URL } = require('../../config');
+const { SERVICE_URL } = require('../../config');
+const { RESPONSE_MESSAGE } = require('../../utils/constants');
 
 const User = require('../../models/User');
 const Room = require('../../models/Room');

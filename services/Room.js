@@ -28,7 +28,6 @@ module.exports = class RoomService {
 
   async createRoom(newRoomData) {
     try {
-      console.log("NEW ROOM DATA", newRoomData);
       return await this.roomModel.create(newRoomData);
     } catch (err) {
       console.error(err);

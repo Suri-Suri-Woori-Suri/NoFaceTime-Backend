@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET_KEY } = require('../../config');
-const { RESPONSE_MESSAGE } = require('../../constants');
+const { RESPONSE_MESSAGE } = require('../../utils/constants');
 
 const User = require('../../models/User');
 const Group = require('../../models/Group');
