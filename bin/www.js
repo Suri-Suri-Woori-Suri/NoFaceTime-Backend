@@ -34,7 +34,7 @@ io.on('connection', socket => {
 
   socket.on('join-room', ({ roomId, userId, nickname, isHost }) => {//userId === socket.id
     socket.join(roomId);
-    console.log('YOU JOINED A ROOM!')
+    console.log('YOU JOINED A ROOM!');
 
     if (!rooms.hasOwnProperty(roomId)) rooms[roomId] = { memberList: [] };//host: socket.id
     if (isHost) rooms[roomId].host = socket.id;
@@ -90,11 +90,11 @@ io.on('connection', socket => {
     const { text, from, to } = data;
     const { roomId } = members[socket.id];
     const { host } = rooms[roomId];
-    console.log(socket.id === host)
-    console.log(host)
+    console.log(socket.id === host);
+    console.log(host);
     console.log(to);
     const sendTo = rooms[roomId].memberList.find(member => member.nickname === to);
-    if(sendTo) io.to(sendTo.socketId).emit('message-secret', { text, from });//from host
+    if (sendTo) io.to(sendTo.socketId).emit('message-secret', { text, from });//from host
     io.to(host).emit('message-secret', { text, from });
   });
 

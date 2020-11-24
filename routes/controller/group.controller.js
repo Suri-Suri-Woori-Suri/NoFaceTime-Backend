@@ -10,6 +10,8 @@ const GroupService = require('../../services/Group');
 const userService = new UserService(User);
 const groupService = new GroupService(User, Group);
 
+const sendMail = require('../../utils/nodeMailer');
+
 exports.createNewGroup = async (req, res, next) => {
   try {
     const { userId, groupName, members } = req.body;
@@ -74,5 +76,17 @@ exports.deleMembersFromGroup = async (req, res, next) => {
     return res.status(204);
   } catch (err) {
     console.log(err);
+  }
+};
+
+exports.sendMailToMembers = async (req, res, next) => {
+  try {
+    const { sender, receiver, roomLink, groupId } = req.body; //receiver는 배열로 들어옴
+    console.log("REQ REQ", req.body);
+    sendMail(sender, receiver, roomLink, groupId);
+
+    return res.status(200).json({ message: 'ok' });
+  } catch (err) {
+    console.error(err);
   }
 };

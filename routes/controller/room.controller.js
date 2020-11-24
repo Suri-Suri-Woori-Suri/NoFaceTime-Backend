@@ -30,7 +30,7 @@ exports.getRoom = async (req, res, next) => {
 
 exports.createNewRoom = async (req, res, next) => {
   try {
-    sendMail();
+    console.log('createNewRoom', req.body);
     const { currentUser, roomName } = req.body;
     const roomUniqueId = uuidv4();
 
