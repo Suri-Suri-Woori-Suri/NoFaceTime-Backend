@@ -20,11 +20,9 @@ const sendMail = require('../../utils/nodeMailer');
 exports.getRoom = async (req, res, next) => {
   try {
     const roomLink = `${SERVICE_URL}/rooms/${req.params.roomId}`;
-    console.log("CONTROLLER' LINK", roomLink);
     const roomData = await roomService.getRoom(roomLink);
 
-    console.log("ROOM CONTROLLER", roomData);
-    return res.status(200).send(roomData);
+    return res.status(200).json({ roomData });
   } catch (err) {
     console.error(err);
   }
@@ -32,7 +30,6 @@ exports.getRoom = async (req, res, next) => {
 
 exports.createNewRoom = async (req, res, next) => {
   try {
-    console.log('createNewRoom', req.body);
     sendMail();
     const { currentUser, roomName } = req.body;
     const roomUniqueId = uuidv4();
@@ -44,7 +41,6 @@ exports.createNewRoom = async (req, res, next) => {
     };
 
     const roomDataSavedToDB = await roomService.createRoom(newRoomData);
-    console.log("$$$$$$", roomDataSavedToDB);
     await userService.addUserRoomData(currentUser._id, roomDataSavedToDB._id);
     return res.status(201).json({ rooms: roomDataSavedToDB });//전체 방 정보가 아닌 ADDED ROOM 하나의 정보만 보냅니다.
   } catch (err) {

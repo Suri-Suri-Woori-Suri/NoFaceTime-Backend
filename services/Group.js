@@ -26,7 +26,6 @@ module.exports = class GroupService {
   async findMembers(groupId) {//ok
     try {
       const groupData = await this.groupModel.findById(groupId).exec();
-      console.log("########", groupData);
       const { members } = groupData;
 
       return members;
@@ -38,7 +37,6 @@ module.exports = class GroupService {
   async addMembers(groupId, membersArray) {//ok
     try {
       const groupData = await this.groupModel.updateMany({ _id: groupId }, { $push: { members: { $each: membersArray } } }).exec();
-      console.log("########", groupData);
       return groupData;
     } catch (err) {
       console.error(err);

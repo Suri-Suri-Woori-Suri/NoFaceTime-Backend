@@ -18,9 +18,7 @@ exports.createNewGroup = async (req, res, next) => {
       members: members
     };
 
-    console.log(userId);
     const groupDataSavedToDB = await groupService.createGroup(newGroupData);
-    console.log("#######", groupDataSavedToDB);
     await userService.addUserGroupData(userId, groupDataSavedToDB._id);
     return res.status(201).json({ groups: groupDataSavedToDB });
   } catch (err) {
@@ -58,7 +56,6 @@ exports.addMembersToGroup = async (req, res, next) => {
   try {
     const groupId = req.params.groupId;
     const { members } = req.body;
-    console.log('***************', members);
     await groupService.addMembers(groupId, members);//업데이트 된 그룹 데이터
 
     return res.json({ groupId, members });

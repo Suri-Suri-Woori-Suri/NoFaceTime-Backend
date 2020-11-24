@@ -14,7 +14,6 @@ exports.getUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const userData = await userService.getUserData({ '_id': userId });
-    console.log("USER CONTROLLER", userId);
 
     return res.status(200).send(userData);
   } catch (err) {

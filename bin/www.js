@@ -15,7 +15,6 @@ const options = {
 };
 
 const server = https.createServer(options, app).listen(port, function () {
-  console.log('Https server listening');
 });
 
 const io = socketio(server, {
@@ -32,28 +31,27 @@ const rooms = {}; //id : { host, memberList }
 
 io.on('connection', socket => {
   console.log('we have a new connection!!');
-  //나중에 host 정보도 가져와야한다.- > secret chat 구현위해서
-  socket.on('join-room', ({ roomId, userId, nickname, host }) => {//userId === socket.id
+
+  socket.on('join-room', ({ roomId, userId, nickname, isHost }) => {//userId === socket.id
     socket.join(roomId);
     console.log('YOU JOINED A ROOM!')
 
     if (!rooms.hasOwnProperty(roomId)) rooms[roomId] = { memberList: [] };//host: socket.id
-    if (host) rooms[roomId].host = socket.id;
-    console.log(rooms);
-    //if (host === true) //예시
-    //rooms[roomId] = socket.id//(host's socket Id)
-    //socket.to(roomId).emit('joined', { members });
+    if (isHost) rooms[roomId].host = socket.id;
+
     const newobj = {};
     const newMember = { roomId, userId, nickname, socketId: socket.id };
     newobj[socket.id] = newMember;
+    console.log(rooms);
+    console.log(rooms[roomId].host);
 
-    io.to(socket.id).emit('joined', { members });//기존의 맴버, 방금 join 한 사람한테만간다
-    socket.to(roomId).emit('joined', { newMember: newobj });//새 맴버, 방금 join 한 사람 외의 모두에게 간다.
+    io.to(socket.id).emit('joined', { members, host: rooms[roomId].host });//기존의 맴버 정보, 방금 join 한 사람한테만간다
+    socket.to(roomId).emit('joined-newMember', { newMember: newobj });//새 맴버, 방금 join 한 사람 외의 모두에게 간다.
+    //io.in(roomId).emit('joined', { newMember, members }) //sender 포함
+    //socket.broadcast.to(roomId).emit('joined', { newMember, members });
 
     members[socket.id] = newMember;
     rooms[roomId].memberList.push(newMember);
-    //io.in(roomId).emit('joined', { newMember, members }) //sender 포함
-    //socket.broadcast.to(roomId).emit('joined', { newMember, members });
   });
 
   socket.on('send signal', ({ signal, to }) => {
@@ -80,38 +78,36 @@ io.on('connection', socket => {
 
   /////////////// Chat
   socket.on('message-public', message => {
-    socket.join('test');//나중에 룸 아이디로 변경. 테스트용
-    console.log(user)
-    const user = members[socket.id];// 나중에 주석풀기
-    //const targetRoom = user.roomId; 나중에 주석 풀기
-    //io.to(targetRoom)
-    const targetRoom = 'test';
-    console.log(message);
-    console.log(socket.id)
+    console.log("PUBLIC", message);
+    const { text, from } = message;
+    const user = members[socket.id];
+    const targetRoom = user.roomId;
 
-    io.in(targetRoom).emit('message-public', { text: message, from: user.nickname });
+    io.in(targetRoom).emit('message-public', { text, from });
   });
 
-  socket.on('message-secret', message => {
-    const user = members[socket.id];//
-    //const targetRoom = user.roomId; 나중에 주석 풀기
-    const targetRoom = 'test';
-    io.to(socketId).emit('message-secret', { text: message, from: user.nickname });
-  });
-
-
-  socket.on('outof-chat', () => {
-
+  socket.on('message-secret', data => {
+    const { text, from, to } = data;
+    const { roomId } = members[socket.id];
+    const { host } = rooms[roomId];
+    console.log(socket.id === host)
+    console.log(host)
+    console.log(to);
+    const sendTo = rooms[roomId].memberList.find(member => member.nickname === to);
+    if(sendTo) io.to(sendTo.socketId).emit('message-secret', { text, from });//from host
+    io.to(host).emit('message-secret', { text, from });
   });
 
   ///////////////  Leave
   socket.on('leave', (data) => {
-    console.log('someone leave..  Button');//버튼 눌러서
+    console.log('LEFT VIDEO CONFERENCE, 헤당 컴포넌트가 unmount 될 떄 시행됨');//버튼 눌러서
     //socket.to(socket.id).emit('user left', socket.id);
   });
 
   socket.on('disconnect', () => {
     console.log('someone leave..  X');//창 닫아버림
+    if (!members[socket.id]) return;
+    //if (!members[socket.id])
     // const members = {}; socketId : { userId, roomId, nickname, socketId }
     // const rooms = {}; id : { host, memberList }
     const roomId = members[socket.id].roomId;
@@ -120,9 +116,7 @@ io.on('connection', socket => {
     const updatedMember = rooms[roomId].memberList.filter(member => member.socketId !== socket.id);
     rooms[roomId].memberList = updatedMember;
 
-    if (members[socketId]) {
-      socket.to(roomId).emit('user left', { socketId: socket.id });// to room except sender
-    }
+    socket.to(roomId).emit('user left', { socketId: socket.id });// to room except sender
   });
 });
 
