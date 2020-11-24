@@ -7,7 +7,6 @@ const verifyToken = (req, res, next) => {
   try {
     const { cookie } = req.headers;
     const token = cookie.split('=')[1];
-    console.log("VERYFY TOKEN", token);
 
     if (!token) {
       return res.status(401).send({

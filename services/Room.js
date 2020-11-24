@@ -18,7 +18,6 @@ module.exports = class RoomService {
   async getRoom(roomLink) {
     try {
       const roomData = await this.roomModel.find({ link: roomLink }).exec();
-      console.log("ROOM SERVICE", roomData);
 
       return roomData;
     } catch (err) {
@@ -37,7 +36,6 @@ module.exports = class RoomService {
   async deleteRoom(roomObjectId) {
     try {
       const result = await this.roomModel.deleteOne({ '_id': roomObjectId });
-      console.log("DELETE RESULT");
 
       return result;
     } catch (err) {
