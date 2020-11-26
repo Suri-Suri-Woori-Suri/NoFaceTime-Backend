@@ -4,18 +4,22 @@ const port = normalizePort(process.env.PORT || 5000);
 const socketio = require('socket.io');
 
 app.set('port', port);
-const https = require('https');
-const fs = require('fs');
-const options = {
-  key: fs.readFileSync('./bin/key.pem'),
-  cert: fs.readFileSync('./bin/cert.pem'),
-  passphrase: 'test',
-  requestCert: false,
-  rejectUnauthorized: false,
-};
+//const https = require('https');
+// const fs = require('fs');
+// const options = {
+//   key: fs.readFileSync('./bin/key.pem'),
+//   cert: fs.readFileSync('./bin/cert.pem'),
+//   passphrase: 'test',
+//   requestCert: false,
+//   rejectUnauthorized: false,
+// };
 
-const server = https.createServer(options, app).listen(port, function () {
-});
+// const server = https.createServer(options, app).listen(port, function () {
+// });
+
+const http = require('http');
+
+const server = http.createServer(app).listen(port);
 
 const io = socketio(server, {
   cors: {
