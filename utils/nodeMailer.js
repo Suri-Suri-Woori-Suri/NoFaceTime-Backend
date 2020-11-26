@@ -35,6 +35,6 @@ const sendMail = async (sender, receiver, roomLink, groupId) => {
   });
 };
 
-sendMail().catch(console.error);
+//sendMail().catch(console.error);
 
 module.exports = sendMail;
