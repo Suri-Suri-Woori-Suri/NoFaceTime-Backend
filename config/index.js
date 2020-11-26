@@ -6,8 +6,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 const NODE_MAILER_ID = process.env.NODE_MAILER_ID;
 const NODE_MAILER_PASSWORD = process.env.NODE_MAILER_PASSWORD;
-const SERVICE_URL = 'https://localhost:3000';
-const SERVER_URL = 'https://localhost:5000';
+const SERVICE_URL = 'https://twofacetime.xyz';
 
 module.exports = {
   NODE_ENV,
@@ -15,6 +14,5 @@ module.exports = {
   MONGO_URI,
   NODE_MAILER_ID,
   NODE_MAILER_PASSWORD,
-  SERVICE_URL,
-  SERVER_URL
+  SERVICE_URL
 };
