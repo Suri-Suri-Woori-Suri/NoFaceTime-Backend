@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const path = require('path');
 const cors = require('cors');
 
+const homeRouter = require('./routes/home');
 const loginRouter = require('./routes/login');
 const usersRouter = require('./routes/users');
 const groupsRouter = require('./routes/groups');
@@ -37,6 +38,7 @@ app.use(cors({
 
 //app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', homeRouter);
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);
 app.use('/groups', groupsRouter);
