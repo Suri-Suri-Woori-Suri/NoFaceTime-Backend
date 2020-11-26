@@ -46,7 +46,7 @@ io.on('connection', socket => {
     console.log(rooms[roomId].host);
 
     io.to(socket.id).emit('joined', { members, host: rooms[roomId].host });//기존의 맴버 정보, 방금 join 한 사람한테만간다
-    socket.to(roomId).emit('joined-newMember', { newMember: newobj });//새 맴버, 방금 join 한 사람 외의 모두에게 간다.
+    socket.to(roomId).emit('joined-newMember', newobj);//새 맴버, 방금 join 한 사람 외의 모두에게 간다.
     //io.in(roomId).emit('joined', { newMember, members }) //sender 포함
     //socket.broadcast.to(roomId).emit('joined', { newMember, members });
 
