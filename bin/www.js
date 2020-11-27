@@ -8,6 +8,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const { SERVICE_URL } = require('../config');
+const { send } = require('process');
 let server;
 
 if (process.env.NODE_ENV === 'development') {
@@ -25,8 +26,6 @@ if (process.env.NODE_ENV === 'development') {
 // const server = https.createServer(options, app).listen(port);
 // const server = http.createServer(app).listen(port);
 
-
-
 const io = socketio(server, {
   cors: {
     origin: SERVICE_URL,
@@ -36,8 +35,8 @@ const io = socketio(server, {
   }
 });
 
-const members = {};
-const rooms = {};
+const members = {};// { id : { roomId, userId, nickname, socketId: socket.id } }
+const rooms = {};// { id : { host: XX,  memberList: {} }}
 
 io.on('connection', socket => {
   console.log('we have a new connection!!');
@@ -46,7 +45,7 @@ io.on('connection', socket => {
     socket.join(roomId);
     console.log('YOU JOINED A ROOM!');
 
-    if (!rooms.hasOwnProperty(roomId)) rooms[roomId] = { memberList: [] };
+    if (!rooms.hasOwnProperty(roomId)) rooms[roomId] = { memberList: {} };
     if (isHost) rooms[roomId].host = socket.id;
 
     const newobj = {};
@@ -55,11 +54,14 @@ io.on('connection', socket => {
     console.log(rooms);
     console.log(rooms[roomId].host);
 
-    io.to(socket.id).emit('joined', { members, host: rooms[roomId].host });
+    io.to(socket.id).emit('joined', { members: rooms[roomId].memberList, host: rooms[roomId].host });
     socket.to(roomId).emit('joined-newMember', newobj);
 
     members[socket.id] = newMember;
-    rooms[roomId].memberList.push(newMember);
+    rooms[roomId].memberList[socket.id] = newMember;
+
+    console.log("ROOMS", rooms, "MEMBERLIST", rooms[roomId].memberList);
+    console.log("Members", members);
   });
 
   socket.on('send signal', ({ signal, to }) => {
@@ -98,8 +100,17 @@ io.on('connection', socket => {
     console.log(socket.id === host);
     console.log(host);
     console.log(to);
-    const sendTo = rooms[roomId].memberList.find(member => member.nickname === to);
-    if (sendTo) io.to(sendTo.socketId).emit('message-secret', { text, from });
+    let sendTo;
+    for (let key in rooms[roomId].memberList) {
+      console.log('key', key)
+      if (rooms[roomId].memberList[key].nickname === to) {
+        sendTo = key;
+      }
+    }
+
+    console.log("sENDTO", sendTo);
+    //const sendTo = rooms[roomId].memberList.find(member => member.nickname === to);
+    if (sendTo) io.to(sendTo).emit('message-secret', { text, from });
     io.to(host).emit('message-secret', { text, from });
   });
 
@@ -108,14 +119,32 @@ io.on('connection', socket => {
 
   });
 
+  socket.on('leave room', () => {
+    console.log('someone leave..  X.. by Leaving Button');
+    if (!members[socket.id]) return;
+    const roomId = members[socket.id].roomId;
+
+    delete members[socket.id];
+    delete rooms[roomId].memberList[socket.id];
+
+    const memberInRoomArray = Object.keys(rooms[roomId].memberList);
+    if (!memberInRoomArray.length) delete rooms[roomId];
+
+    socket.to(roomId).emit('user left', { socketId: socket.id });
+    console.log(rooms)
+    console.log(members)
+  });
+
   socket.on('disconnect', () => {
     console.log('someone leave..  X');
     if (!members[socket.id]) return;
     const roomId = members[socket.id].roomId;
 
     delete members[socket.id];
-    const updatedMember = rooms[roomId].memberList.filter(member => member.socketId !== socket.id);
-    rooms[roomId].memberList = updatedMember;
+    delete rooms[roomId].memberList[socket.id];
+
+    const memberInRoomArray = Object.keys(rooms[roomId].memberList);
+    if (!memberInRoomArray.length) delete rooms[roomId];
 
     socket.to(roomId).emit('user left', { socketId: socket.id });
   });
