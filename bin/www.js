@@ -19,9 +19,9 @@ if (process.env.NODE_ENV === 'development') {
     rejectUnauthorized: false,
   };
   server = https.createServer(options, app).listen(port);
+} else {
+  server = http.createServer(app).listen(port);
 }
-
-server = http.createServer(app).listen(port);
 // const server = https.createServer(options, app).listen(port);
 // const server = http.createServer(app).listen(port);
 
