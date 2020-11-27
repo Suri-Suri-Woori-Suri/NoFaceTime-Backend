@@ -4,26 +4,32 @@ const port = normalizePort(process.env.PORT || 5000);
 const socketio = require('socket.io');
 
 app.set('port', port);
-//const https = require('https');
-// const fs = require('fs');
-// const options = {
-//   key: fs.readFileSync('./bin/key.pem'),
-//   cert: fs.readFileSync('./bin/cert.pem'),
-//   passphrase: 'test',
-//   requestCert: false,
-//   rejectUnauthorized: false,
-// };
-
-// const server = https.createServer(options, app).listen(port, function () {
-// });
-
+const https = require('https');
 const http = require('http');
+const fs = require('fs');
+const { SERVICE_URL } = require('../config');
+let server;
 
-const server = http.createServer(app).listen(port);
+if (process.env.NODE_ENV === 'development') {
+  const options = {
+    key: fs.readFileSync('./bin/key.pem'),
+    cert: fs.readFileSync('./bin/cert.pem'),
+    passphrase: 'test',
+    requestCert: false,
+    rejectUnauthorized: false,
+  };
+  server = https.createServer(options, app).listen(port);
+} else {
+  server = http.createServer(app).listen(port);
+}
+// const server = https.createServer(options, app).listen(port);
+// const server = http.createServer(app).listen(port);
+
+
 
 const io = socketio(server, {
   cors: {
-    origin: "https://twofacetime.xyz",
+    origin: SERVICE_URL,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["my-custom-header"],
     credentials: true
