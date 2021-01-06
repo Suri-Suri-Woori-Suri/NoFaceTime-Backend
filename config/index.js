@@ -14,9 +14,6 @@ if (process.env.NODE_ENV === 'development') {
   SERVICE_URL = 'https://www.twofacetime.xyz';
 }
 
-//const SERVICE_URL = 'https://www.twofacetime.xyz';
-//const SERVICE_URL = 'https://localhost:3000';
-
 module.exports = {
   NODE_ENV,
   JWT_SECRET_KEY,
