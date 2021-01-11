@@ -30,7 +30,6 @@ exports.getRoom = async (req, res, next) => {
 
 exports.createNewRoom = async (req, res, next) => {
   try {
-    console.log('createNewRoom', req.body);
     const { currentUser, roomName } = req.body;
     const roomUniqueId = uuidv4();
 
@@ -41,7 +40,9 @@ exports.createNewRoom = async (req, res, next) => {
     };
 
     const roomDataSavedToDB = await roomService.createRoom(newRoomData);
+
     await userService.addUserRoomData(currentUser._id, roomDataSavedToDB._id);
+
     return res.status(201).json({ rooms: roomDataSavedToDB });//전체 방 정보가 아닌 ADDED ROOM 하나의 정보만 보냅니다.
   } catch (err) {
     console.error(err);
@@ -52,10 +53,11 @@ exports.deleteRoom = async (req, res, next) => {
   try {
     const roomId = req.params.roomId;
     const { userId } = req.body;
+
     await roomService.deleteRoom(roomId);
     await userService.deleteUserRoomData(userId, roomId);
 
-    return res.status(204);
+    return res.status(204).end();
   } catch (err) {
     console.error(err);
   }

@@ -19,6 +19,17 @@ module.exports = class UserService {
     try {
       const { email, nickname } = newUserData;
       const result = await new User({ email, nickname, groups: [], rooms: [] }).save();
+
+      return result;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async deleteUserData(userEmail) {
+    try {
+      const result = await this.userModel.deleteOne({ email: userEmail });
+
       return result;
     } catch (err) {
       console.error(err);
