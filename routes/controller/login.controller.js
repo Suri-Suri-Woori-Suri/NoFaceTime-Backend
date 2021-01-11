@@ -38,7 +38,7 @@ exports.loginAndIssueToken = async (req, res, next) => {
       }
     );
 
-    return res.json({ loginUserData });
+    return res.status(201).json({ loginUserData });
   } catch (err) {
     console.error(err);
   }

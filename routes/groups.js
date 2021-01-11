@@ -6,10 +6,9 @@ const {
   deleteGroups,
   getAllMembers,
   addMembersToGroup,
-  deleMembersFromGroup,
+  deleteMembersFromGroup,
   sendMailToMembers
 } = require('./controller/group.controller');
-
 const verifyToken = require('./middleware/verifyToken');
 
 router.post('/', verifyToken, createNewGroup);//add group
@@ -22,6 +21,6 @@ router.post('/:groupId/members/', verifyToken, addMembersToGroup);
 
 router.post('/:groupId/members/mail', verifyToken, sendMailToMembers);
 
-router.delete('/:groupId/members/:memberId', verifyToken, deleMembersFromGroup);
+router.delete('/:groupId/members/:memberId', verifyToken, deleteMembersFromGroup);
 
 module.exports = router;
