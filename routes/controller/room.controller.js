@@ -1,21 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 
 const { SERVICE_URL } = require('../../config');
-const { RESPONSE_MESSAGE } = require('../../utils/constants');
-
 const User = require('../../models/User');
 const Room = require('../../models/Room');
-const Group = require('../../models/Group');
-
 const UserService = require('../../services/User');
 const RoomService = require('../../services/Room');
-const GroupService = require('../../services/Group');
 
 const userService = new UserService(User);
 const roomService = new RoomService(User, Room);
-const groupService = new GroupService(User, Group);
-
-const sendMail = require('../../utils/nodeMailer');
 
 exports.getRoom = async (req, res, next) => {
   try {
@@ -43,7 +35,7 @@ exports.createNewRoom = async (req, res, next) => {
 
     await userService.addUserRoomData(currentUser._id, roomDataSavedToDB._id);
 
-    return res.status(201).json({ rooms: roomDataSavedToDB });//전체 방 정보가 아닌 ADDED ROOM 하나의 정보만 보냅니다.
+    return res.status(201).json({ rooms: roomDataSavedToDB });
   } catch (err) {
     console.error(err);
   }
@@ -62,4 +54,3 @@ exports.deleteRoom = async (req, res, next) => {
     console.error(err);
   }
 };
-

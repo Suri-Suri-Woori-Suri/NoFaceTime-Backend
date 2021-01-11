@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-
 const { NODE_MAILER_ID, NODE_MAILER_PASSWORD } = require('../config');
 
 const sendMail = async (sender, receiver, roomLink, groupId) => {
@@ -13,7 +12,6 @@ const sendMail = async (sender, receiver, roomLink, groupId) => {
       pass: NODE_MAILER_PASSWORD
     }
   });
-  console.log("$$$$", receiver);
 
   const mailOptions = {
     from: NODE_MAILER_ID,
@@ -34,7 +32,5 @@ const sendMail = async (sender, receiver, roomLink, groupId) => {
     }
   });
 };
-
-//sendMail().catch(console.error);
 
 module.exports = sendMail;

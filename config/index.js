@@ -3,7 +3,6 @@ require('dotenv').config();
 const NODE_ENV = process.env.NODE_ENV;
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const MONGO_URI = process.env.MONGO_URI;
-
 const NODE_MAILER_ID = process.env.NODE_MAILER_ID;
 const NODE_MAILER_PASSWORD = process.env.NODE_MAILER_PASSWORD;
 let SERVICE_URL;
