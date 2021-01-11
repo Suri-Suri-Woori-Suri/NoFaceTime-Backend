@@ -26,8 +26,9 @@ module.exports = class GroupService {
   async deleteMultipleGroups(arrayOfGroupObjectId) {
     try {
       arrayOfGroupObjectId.forEach(async (id) => {
-        await this.groupModel.deleteOne({ '_id': id });
+        await this.groupModel.deleteOne({ _id: id });
       });
+
       return;
     } catch (err) {
       console.error(err);
@@ -45,9 +46,10 @@ module.exports = class GroupService {
     }
   }
 
-  async addMembers(groupId, membersArray) {//ok
+  async addMembers(groupId, membersArray) {
     try {
       const groupData = await this.groupModel.updateMany({ _id: groupId }, { $push: { members: { $each: membersArray } } }).exec();
+
       return groupData;
     } catch (err) {
       console.error(err);
@@ -57,6 +59,7 @@ module.exports = class GroupService {
   async deleteMembers(groupId, membersArray) {
     try {
       const groupData = await this.groupModel.updateMany({ _id: groupId }, { $pull: { members: { $in: membersArray } } }).exec();
+
       return groupData;
     } catch (err) {
       console.error(err);

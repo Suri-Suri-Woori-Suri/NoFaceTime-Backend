@@ -14,7 +14,3 @@ exports.TOKEN_MESSAGE = {
   NOT_EXIST: 'Token does not exist.',
   INVALID: 'Token is not valid.'
 };
-
-exports.ERROR_MESSAGE = {
-
-};

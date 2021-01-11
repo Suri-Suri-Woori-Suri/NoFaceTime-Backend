@@ -59,7 +59,7 @@ exports.addMembersToGroup = async (req, res, next) => {
     const groupId = req.params.groupId;
     const { members } = req.body;
 
-    await groupService.addMembers(groupId, members);//업데이트 된 그룹 데이터
+    await groupService.addMembers(groupId, members);
 
     return res.json({ groupId, members });
   } catch (err) {
@@ -74,7 +74,6 @@ exports.deleteMembersFromGroup = async (req, res, next) => {
     const membersArray = Array.isArray(parsed.member) ? parsed.member : [parsed.member];
 
     await groupService.deleteMembers(groupId, membersArray);
-    const updatedMembers = await groupService.findMembers(groupId);
 
     return res.status(204).end();
   } catch (err) {
@@ -84,7 +83,7 @@ exports.deleteMembersFromGroup = async (req, res, next) => {
 
 exports.sendMailToMembers = async (req, res, next) => {
   try {
-    const { sender, receiver, roomLink, groupId } = req.body; //receiver는 배열로 들어옴
+    const { sender, receiver, roomLink, groupId } = req.body;
     sendMail(sender, receiver, roomLink, groupId);
 
     return res.status(200).json({ message: 'ok' });

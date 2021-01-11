@@ -7,9 +7,7 @@ module.exports = class UserService {
 
   async getUserData(filterOfUser) {
     try {
-      const result = await this.userModel.findOne(filterOfUser).populate('rooms').populate('groups');
-
-      return result;
+      return await this.userModel.findOne(filterOfUser).populate('rooms').populate('groups');
     } catch (err) {
       console.error(err);
     }
@@ -18,9 +16,8 @@ module.exports = class UserService {
   async addUserData(newUserData) {
     try {
       const { email, nickname } = newUserData;
-      const result = await new User({ email, nickname, groups: [], rooms: [] }).save();
 
-      return result;
+      return await new User({ email, nickname, groups: [], rooms: [] }).save();
     } catch (err) {
       console.error(err);
     }
@@ -28,9 +25,7 @@ module.exports = class UserService {
 
   async deleteUserData(userEmail) {
     try {
-      const result = await this.userModel.deleteOne({ email: userEmail });
-
-      return result;
+      return await this.userModel.deleteOne({ email: userEmail });
     } catch (err) {
       console.error(err);
     }
@@ -39,8 +34,8 @@ module.exports = class UserService {
   async addUserGroupData(userObjectId, groupObjectId) {
     try {
       return await this.userModel.updateOne(
-        { '_id': userObjectId },
-        { $push: { 'groups': groupObjectId } });
+        { _id: userObjectId },
+        { $push: { groups: groupObjectId } });
     } catch (err) {
       console.error(err);
     }
@@ -49,8 +44,8 @@ module.exports = class UserService {
   async deleteUserGroupData(userObjectId, groupObjectIds) {
     try {
       return await this.userModel.updateMany(
-        { '_id': userObjectId },
-        { $pull: { 'groups': { $in: groupObjectIds } } });
+        { _id: userObjectId },
+        { $pull: { groups: { $in: groupObjectIds } } });
     } catch (err) {
       console.error(err);
     }
@@ -59,8 +54,8 @@ module.exports = class UserService {
   async addUserRoomData(userObjectId, roomObjectId) {
     try {
       return await this.userModel.updateOne(
-        { '_id': userObjectId },
-        { $push: { 'rooms': roomObjectId } });
+        { _id: userObjectId },
+        { $push: { rooms: roomObjectId } });
     } catch (err) {
       console.error(err);
     }
@@ -69,8 +64,8 @@ module.exports = class UserService {
   async deleteUserRoomData(userObjectId, roomObjectId) {
     try {
       return await this.userModel.updateOne(
-        { '_id': userObjectId },
-        { $pull: { 'rooms': roomObjectId } });
+        { _id: userObjectId },
+        { $pull: { rooms: roomObjectId } });
     } catch (err) {
       console.error(err);
     }

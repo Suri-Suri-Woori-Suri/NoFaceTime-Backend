@@ -20,7 +20,6 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// 개발시에는 'dev', 배포시에는 'combined'
 app.use((req, res, next) => {
   if (NODE_ENV === 'production') {
     morgan('combined')(req, res, next);
@@ -35,8 +34,6 @@ app.use(cors({
   origin: true,
   credentials: true
 }));
-
-//app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', homeRouter);
 app.use('/login', loginRouter);
