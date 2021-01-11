@@ -4,6 +4,17 @@ module.exports = class GroupService {
     this.groupModel = groupModel;
   }
 
+  async findGroupId(groupName) {
+    try {
+      const groupData = await this.groupModel.findOne({ name: groupName }).exec();
+      const { _id } = groupData;
+
+      return _id;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   async createGroup(newGroupData) {
     try {
       return await this.groupModel.create(newGroupData);
@@ -14,7 +25,7 @@ module.exports = class GroupService {
 
   async deleteMultipleGroups(arrayOfGroupObjectId) {
     try {
-      arrayOfGroupObjectId.forEach(async(id) => {
+      arrayOfGroupObjectId.forEach(async (id) => {
         await this.groupModel.deleteOne({ '_id': id });
       });
       return;
