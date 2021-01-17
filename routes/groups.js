@@ -11,7 +11,7 @@ const {
 } = require('./controller/group.controller');
 const verifyToken = require('./middleware/verifyToken');
 
-router.post('/', verifyToken, createNewGroup);//add group
+router.post('/', verifyToken, createNewGroup);
 
 router.delete('/:id', verifyToken, deleteGroups);
 
