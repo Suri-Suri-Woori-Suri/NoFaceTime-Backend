@@ -77,7 +77,9 @@ module.exports = (server) => {
         }
       }
 
-      if (sendTo) io.to(sendTo).emit('message secret', { text, from });
+      if (sendTo) {
+        io.to(sendTo).emit('message secret', { text, from });
+      }
       io.to(host).emit('message secret', { text, from });
     });
 
